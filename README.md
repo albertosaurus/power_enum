@@ -118,3 +118,22 @@ In that case there isn't much point cluttering up your models directory with tho
 Copy virtual_enumerations_sample.rb to Rails.root/config/initializers/virtual_enumerations.rb and configure it accordingly.
 
 See virtual_enumerations_sample.rb in the examples directory of this gem for a full description.
+
+
+## How to run tests
+
+Go to dummy project:
+    
+    cd ./spec/dummy
+
+Run migrations for test environment:
+
+    RAILS_ENV=test rake db:migrate
+
+Go back to gem root directory:
+
+    cd ../../
+
+And finally run tests:
+
+    rake spec

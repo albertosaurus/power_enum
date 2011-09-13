@@ -13,3 +13,16 @@ begin
 rescue
   puts "Jeweler or one of its dependencies is not installed."
 end
+
+
+begin
+  require 'rspec/core/rake_task'
+  task :default => :spec
+
+  RSpec::Core::RakeTask.new do |t|
+    t.rspec_opts = ['--color', '--backtrace', '--format nested']
+  end
+rescue
+  puts "rspec gem is not installed"
+end
+
