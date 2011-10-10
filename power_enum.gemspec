@@ -28,7 +28,8 @@ Gem::Specification.new do |s|
     "lib/generators/enum/templates/rails31_migration.rb.erb",
     "lib/power_enum.rb",
     "lib/power_enum/migration/command_recorder.rb",
-    "lib/power_enum/schema/schema_statements.rb"
+    "lib/power_enum/schema/schema_statements.rb",
+    "lib/power_enum/reflection.rb"
   ]
   s.homepage = "http://github.com/albertosaurus/enumerations_mixin"
   s.require_paths = ["lib"]

@@ -7,6 +7,7 @@ class PowerEnum < Rails::Engine
     ActiveSupport.on_load(:active_record) do
       include ActiveRecord::Acts::Enumerated
       include ActiveRecord::Aggregations::HasEnumerated
+      include PowerEnum::Reflection
 
       ActiveRecord::ConnectionAdapters.module_eval do
         include PowerEnum::Schema::SchemaStatements

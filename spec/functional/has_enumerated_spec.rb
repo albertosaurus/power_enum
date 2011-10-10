@@ -20,6 +20,27 @@ describe 'has_enumerated' do
     Booking.has_enumerated?('foo').should_not be_true
     Booking.has_enumerated?(nil).should_not be_true
   end
+  
+  it 'should be able to reflect on all enumerated' do
+    Booking.should respond_to(:reflect_on_all_enumerated)
+    Booking.reflect_on_all_enumerated.map(&:name).to_set.should == [:state, :status].to_set
+  end
+  
+  it 'should have reflection on has_enumerated association' do
+    Booking.reflect_on_enumerated(:state).should_not be_nil
+    Booking.reflect_on_enumerated('status').should_not be_nil
+  end
+  
+  it 'should have reflection properly built' do
+    reflection = Booking.reflect_on_enumerated(:status)
+    reflection.should be_kind_of(PowerEnum::Reflection::EnumerationReflection)
+    reflection.macro.should == :has_enumerated
+    reflection.name.to_sym.should == :status
+    reflection.active_record.should == Booking
+    reflection.klass.should == BookingStatus
+    reflection.options[:foreign_key].should == :status_id
+    reflection.options[:on_lookup_failure].should == :not_found_status_handler
+  end
 
   it 'enumerated_attributes should contain the list of has_enumerated attributes and nothing else' do
     Booking.enumerated_attributes.size.should == 2
@@ -70,9 +91,11 @@ describe 'has_enumerated' do
       expect { @booking.state = :XXX }.to raise_error ArgumentError
     end
 
-    it 'assigns the foreign key to nil if :on_lookup_failure method is not specified and nil is passed' do
+    it 'assigns the foreign key to nil if :on_lookup_failure method is not specified and nil or empty string is passed' do
       @booking.status = :confirmed
       @booking.status = nil
+      @booking.status.should be_nil
+      @booking.status = ''
       @booking.status.should be_nil
     end
   end
