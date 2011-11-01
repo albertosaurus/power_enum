@@ -88,7 +88,7 @@ If you're using Rails prior to 3.1, your migration file will look something like
       end
       
       def self.down
-        create_enum :booking_status
+        remove_enum :booking_status
       end
     
     end
