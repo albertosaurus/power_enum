@@ -184,6 +184,10 @@ describe 'acts_as_enumerated' do
     end
   end
 
+  specify "#to_s" do
+    BookingStatus[:confirmed].to_s.should == 'confirmed'
+  end
+
   describe 'name_column' do
     context ':name_column is not specified' do
       it 'name_column should be :name' do

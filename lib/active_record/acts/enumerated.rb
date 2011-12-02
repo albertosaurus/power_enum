@@ -236,6 +236,11 @@ module ActiveRecord
           self.name.to_sym
         end
 
+        # By default enumeration #to_s should return stringified name of the enum. BookingStatus[:foo].to_s returns "foo"
+        def to_s
+          self.name.to_s
+        end
+
         # Returns true if the instance is active, false otherwise.  If it has an attribute 'active',
         # returns the attribute cast to a boolean, otherwise returns true.  This method is used by the 'active'
         # class method to select active enums.
