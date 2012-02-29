@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -11,18 +10,24 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110920064242) do
+ActiveRecord::Schema.define(:version => 20120229205305) do
+
+  create_table "adapters", :force => true do |t|
+    t.integer  "connector_type_id"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
 
   create_table "booking_statuses", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "bookings", :force => true do |t|
     t.integer  "status_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
     t.integer  "state_id"
   end
 
@@ -30,8 +35,8 @@ ActiveRecord::Schema.define(:version => 20110920064242) do
     t.string   "name",        :limit => 50,                   :null => false
     t.string   "description"
     t.boolean  "active",                    :default => true, :null => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                                  :null => false
+    t.datetime "updated_at",                                  :null => false
     t.boolean  "has_sound",                                   :null => false
   end
 
@@ -39,8 +44,8 @@ ActiveRecord::Schema.define(:version => 20110920064242) do
 
   create_table "states", :force => true do |t|
     t.string   "state_code"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
 end

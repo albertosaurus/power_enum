@@ -182,4 +182,9 @@ describe 'has_enumerated' do
     end
   end
 
+  context 'reflections' do
+    it 'should add reflection via reassigning reflections hash' do
+      Booking.reflections.object_id.should_not == Adapter.reflections.object_id
+    end
+  end
 end

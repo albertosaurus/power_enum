@@ -68,7 +68,7 @@ module ActiveRecord
                                      :create_scope )
 
           reflection = PowerEnum::Reflection::EnumerationReflection.new(part_id, options, self)
-          self.reflections.merge! part_id => reflection
+          self.reflections = self.reflections.merge(part_id => reflection)
 
           name         = part_id.to_s
           class_name   = reflection.class_name
