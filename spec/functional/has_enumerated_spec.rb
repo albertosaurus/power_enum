@@ -20,17 +20,17 @@ describe 'has_enumerated' do
     Booking.has_enumerated?('foo').should_not be_true
     Booking.has_enumerated?(nil).should_not be_true
   end
-  
+
   it 'should be able to reflect on all enumerated' do
     Booking.should respond_to(:reflect_on_all_enumerated)
     Booking.reflect_on_all_enumerated.map(&:name).to_set.should == [:state, :status].to_set
   end
-  
+
   it 'should have reflection on has_enumerated association' do
     Booking.reflect_on_enumerated(:state).should_not be_nil
     Booking.reflect_on_enumerated('status').should_not be_nil
   end
-  
+
   it 'should have reflection properly built' do
     reflection = Booking.reflect_on_enumerated(:status)
     reflection.should be_kind_of(PowerEnum::Reflection::EnumerationReflection)
@@ -133,7 +133,7 @@ describe 'has_enumerated' do
       status.should be_an_instance_of BookingStatus
       status.name.should == 'confirmed'
     end
-    
+
     it 'correctly looks up the proper value from the enumeration cache when performing update_attributes' do
       @booking.update_attributes(:status => :rejected)
       status = @booking.status
@@ -154,14 +154,21 @@ describe 'has_enumerated' do
       @booking.should_receive(:status_id=).with(nil)
       @booking.status = nil
     end
-    
+
     it 'does not call :on_lookup_failure method on assignment when empty string is passed, converting it to nil' do
       @booking.should_receive(:status_id=).with(nil)
       @booking.status = ''
     end
 
-    it 'raises ArgumentError if :on_lookup_failure method is not specified when value is passed' do
-      expect { @booking.state = :XXX }.to raise_error ArgumentError
+    it 'adds "is invalid" validation error if :on_lookup_failure method is not specified when value is passed' do
+      @booking.state = :XXX
+      @booking.should be_invalid
+      @booking.errors.messages[:state].should == ["is invalid"]
+      @booking.state.should == :XXX
+
+      @booking.state = :IL
+      @booking.valid?
+      @booking.should be_valid
     end
 
     it 'assigns the foreign key to nil if :on_lookup_failure method is specified and nil or empty string is passed' do
@@ -171,14 +178,17 @@ describe 'has_enumerated' do
       @booking.status = ''
       @booking.status.should be_nil
     end
-    
+
     it 'assigns the foreign key to nil if :on_lookup_failure is not specified and nil is passed' do
       @booking.state = nil
       @booking.state.should be_nil
     end
-    
-    it 'raises ArgumentError if :on_lookup_failure method is not specified and empty string is passed and :permit_empty_name is set' do
-      expect { @booking.state = '' }.to raise_error ArgumentError
+
+    it 'adds "is invalid" validation error if :on_lookup_failure method is not specified and empty string is passed and :permit_empty_name is set' do
+      @booking.state = ''
+      @booking.should be_invalid
+      @booking.errors.messages[:state].should == ["is invalid"]
+      @booking.state.should == ''
     end
   end
 

@@ -79,14 +79,20 @@ module ActiveRecord
 
           module_eval( <<-end_eval, __FILE__, __LINE__ )
             def #{name}
+              if @invalid_enum_values && @invalid_enum_values.has_key?(:#{name})
+                return @invalid_enum_values[:#{name}]
+              end
+
               rval = #{class_name}.lookup_id(self.#{foreign_key})
               if rval.nil? && #{!failure.nil?}
                 return self.send(#{failure.inspect}, :read, #{name.inspect}, #{foreign_key.inspect}, #{class_name.inspect}, self.#{foreign_key})
               end
               return rval
-            end         
+            end
 
             def #{name}=(arg)
+              @invalid_enum_values ||= {}
+
               #{!empty_name ? 'arg = nil if arg.blank?' : ''}
               case arg
               when #{class_name}
@@ -99,18 +105,28 @@ module ActiveRecord
                 val = #{class_name}.lookup_id(arg)
               when nil
                 self.#{foreign_key} = nil
+                @invalid_enum_values.delete :#{name}
                 return nil
-              else     
-                raise TypeError, "#{self.name}: #{name}= argument must be a #{class_name}, String, Symbol or Fixnum but got a: \#{arg.class.name}"            
+              else
+                raise TypeError, "#{self.name}: #{name}= argument must be a #{class_name}, String, Symbol or Fixnum but got a: \#{arg.class.name}"
               end
 
-              if val.nil? 
+              if val.nil?
                 if #{failure.nil?}
-                  raise ArgumentError, "#{self.name}: #{name}= can't assign a #{class_name} for a value of (\#{arg.inspect})"
+                  @invalid_enum_values[:#{name}] = arg
+                else
+                  @invalid_enum_values.delete :#{name}
+                  self.send(#{failure.inspect}, :write, #{name.inspect}, #{foreign_key.inspect}, #{class_name.inspect}, arg)
                 end
-                self.send(#{failure.inspect}, :write, #{name.inspect}, #{foreign_key.inspect}, #{class_name.inspect}, arg)
               else
+                @invalid_enum_values.delete :#{name}
                 self.#{foreign_key} = val.id
+              end
+            end
+
+            validate do
+              if @invalid_enum_values && @invalid_enum_values.has_key?(:#{name})
+                errors.add(:#{name}, "is invalid")
               end
             end
           end_eval
