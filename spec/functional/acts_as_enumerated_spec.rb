@@ -34,7 +34,7 @@ describe 'acts_as_enumerated' do
           status.name.should == 'confirmed'
           status.name_sym.should == :confirmed
         end
-        
+
       end
 
       context ':name_column is specified' do
@@ -85,7 +85,7 @@ describe 'acts_as_enumerated' do
         end
       end
     end
-    
+
     it 'returns instance when instance is passed' do
       state = State[1]
       state2 = State[state]
@@ -204,6 +204,12 @@ describe 'acts_as_enumerated' do
     context ':name_column is specified to be :state_code' do
       it 'name_column should be :state_code' do
         State.name_column.should == :state_code
+      end
+    end
+
+    context 'column "name" exists"' do
+      it 'should not override #name method"' do
+        Country[:ua].name.should == "Ukraine"
       end
     end
   end

@@ -3,10 +3,10 @@
 # Released under the MIT License.  See the LICENSE file for more details.
 
 module ActiveRecord
-  module Acts 
-    module Enumerated 
+  module Acts
+    module Enumerated
       extend ActiveSupport::Concern
-      
+
       module ClassMethods
 
         # Declares the model as enumerated.  See the README for detailed usage instructions.
@@ -54,14 +54,14 @@ module ActiveRecord
         def acts_as_enumerated(options = {})
           valid_keys = [:conditions, :order, :on_lookup_failure, :name_column]
           options.assert_valid_keys(*valid_keys)
-          
+
           valid_keys.each do |key|
             class_attribute "acts_enumerated_#{key.to_s}"
             if options.has_key?( key )
               self.send "acts_enumerated_#{key.to_s}=", options[key]
             end
           end
-          
+
           name_column = if options.has_key?(:name_column) then
                           options[:name_column].to_s.to_sym
                         else
@@ -73,22 +73,24 @@ module ActiveRecord
 
           unless self.is_a? ActiveRecord::Acts::Enumerated::EnumClassMethods
             extend ActiveRecord::Acts::Enumerated::EnumClassMethods
-            
+
             class_eval do
               include ActiveRecord::Acts::Enumerated::EnumInstanceMethods
-              
+
               before_save :enumeration_model_update
               before_destroy :enumeration_model_update
               validates name_column, :presence => true, :uniqueness => true
-              
-              define_method :name do
-                read_attribute( name_column )
+
+              unless column_names.include?("name")
+                define_method :name do
+                  read_attribute( name_column )
+                end
               end
             end
           end
         end
       end
-      
+
       module EnumClassMethods
         attr_accessor :enumeration_model_updates_permitted
 
@@ -132,7 +134,7 @@ module ActiveRecord
           when nil
             nil
           else
-            raise TypeError, "#{self.name}[]: argument should be a String, Symbol or Fixnum but got a: #{arg.class.name}"            
+            raise TypeError, "#{self.name}[]: argument should be a String, Symbol or Fixnum but got a: #{arg.class.name}"
           end
           self.send((self.acts_enumerated_on_lookup_failure || :enforce_none), arg)
         end
@@ -157,7 +159,7 @@ module ActiveRecord
           when Fixnum
             !lookup_id(arg).nil?
           when self
-            possible_match = lookup_id(arg.id) 
+            possible_match = lookup_id(arg.id)
             !possible_match.nil? && possible_match == arg
           else
             false
@@ -165,10 +167,10 @@ module ActiveRecord
         end
 
         # NOTE: purging the cache is sort of pointless because
-        # of the per-process rails model.  
-        # By default this blows up noisily just in case you try to be more 
-        # clever than rails allows.  
-        # For those times (like in Migrations) when you really do want to 
+        # of the per-process rails model.
+        # By default this blows up noisily just in case you try to be more
+        # clever than rails allows.
+        # For those times (like in Migrations) when you really do want to
         # alter the records you can silence the carping by setting
         # enumeration_model_updates_permitted to true.
         def purge_enumerations_cache
@@ -194,13 +196,13 @@ module ActiveRecord
         # Returns a hash of all the enumeration members keyed by their names.
         def all_by_name
           begin
-            @all_by_name ||= all_by_attribute( :name )
+            @all_by_name ||= all_by_attribute( name_column )
           rescue NoMethodError => err
             if err.name == name_column
               raise TypeError, "#{self.name}: you need to define a '#{name_column}' column in the table '#{table_name}'"
             end
             raise
-          end            
+          end
         end
         private :all_by_name
 
@@ -211,7 +213,7 @@ module ActiveRecord
           }.freeze
         end
         private :all_by_attribute
-        
+
         def enforce_none(arg)
           nil
         end
@@ -244,7 +246,7 @@ module ActiveRecord
           raise ActiveRecord::RecordNotFound, "Couldn't find a #{self.name} identified by (#{arg.inspect})"
         end
         private :raise_record_not_found
-        
+
       end
 
       module EnumInstanceMethods
@@ -277,7 +279,7 @@ module ActiveRecord
             super
           end
         end
-        
+
         alias_method :like?, :===
 
         # Returns true if any element in the list returns true for ===(arg), false otherwise.
@@ -311,14 +313,14 @@ module ActiveRecord
           !active?
         end
 
-        # NOTE: updating the models that back an acts_as_enumerated is 
+        # NOTE: updating the models that back an acts_as_enumerated is
         # rather dangerous because of rails' per-process model.
         # The cached values could get out of synch between processes
-        # and rather than completely disallow changes I make you jump 
-        # through an extra hoop just in case you're defining your enumeration 
+        # and rather than completely disallow changes I make you jump
+        # through an extra hoop just in case you're defining your enumeration
         # values in Migrations.  I.e. set enumeration_model_updates_permitted = true
         def enumeration_model_update
-          if self.class.enumeration_model_updates_permitted    
+          if self.class.enumeration_model_updates_permitted
             self.class.purge_enumerations_cache
             true
           else
@@ -332,4 +334,4 @@ module ActiveRecord
     end
   end
 end
-        
+
