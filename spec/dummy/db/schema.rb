@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120229205305) do
+ActiveRecord::Schema.define(:version => 20120707182920) do
 
   create_table "adapters", :force => true do |t|
     t.integer  "connector_type_id"
@@ -42,6 +42,13 @@ ActiveRecord::Schema.define(:version => 20120229205305) do
   end
 
   add_index "connector_types", ["name"], :name => "index_connector_types_on_name", :unique => true
+
+  create_table "countries", :force => true do |t|
+    t.string "code", :limit => 2, :null => false
+    t.string "name",              :null => false
+  end
+
+  add_index "countries", ["code"], :name => "index_countries_on_code", :unique => true
 
   create_table "states", :force => true do |t|
     t.string   "state_code"
