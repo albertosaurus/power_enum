@@ -26,9 +26,18 @@ describe 'has_enumerated' do
     Booking.reflect_on_all_enumerated.map(&:name).to_set.should == [:state, :status].to_set
   end
 
+  it 'should include enumerations as associations' do
+    Booking.reflect_on_all_associations.map(&:name).to_set.should == [:state, :status].to_set
+  end
+
   it 'should have reflection on has_enumerated association' do
     Booking.reflect_on_enumerated(:state).should_not be_nil
     Booking.reflect_on_enumerated('status').should_not be_nil
+  end
+
+  it 'should have reflection on association' do
+    Booking.reflect_on_association(:state).should_not be_nil
+    Booking.reflect_on_association('status').should_not be_nil
   end
 
   it 'should have reflection properly built' do

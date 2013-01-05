@@ -5,6 +5,13 @@ module PowerEnum::Reflection
   extend ActiveSupport::Concern
 
   module ClassMethods
+    def self.extended(base)
+      class << base
+        alias_method_chain :reflect_on_all_associations, :enumeration
+        alias_method_chain :reflect_on_association, :enumeration
+      end
+    end
+
     def reflect_on_all_enumerated
       # Need to give it a full namespace to avoid getting Rails confused in development
       # mode where all objects are reloaded on every request.
@@ -13,6 +20,16 @@ module PowerEnum::Reflection
 
     def reflect_on_enumerated( enumerated )
       reflections[enumerated.to_sym].is_a?(PowerEnum::Reflection::EnumerationReflection) ? reflections[enumerated.to_sym] : nil
+    end
+
+    # Extend associations with enumerations, preferring enumerations
+    def reflect_on_all_associations_with_enumeration
+      reflect_on_all_enumerated + reflect_on_all_associations_without_enumeration
+    end
+
+    # Extend associations with enumerations, preferring enumerations
+    def reflect_on_association_with_enumeration( associated )
+      reflect_on_enumerated(associated) || reflect_on_association_without_enumeration(associated)
     end
   end
 
