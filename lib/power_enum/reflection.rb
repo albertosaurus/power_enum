@@ -95,11 +95,11 @@ module PowerEnum::Reflection
       [self]
     end
 
-    # Normally defined on AR::AssociationReflection::MacroReflection.
-    # Absence of this method on EnumerationReflection causes ransack_ui to barf.
+    # Returns +true+ if +self+ is a +belongs_to+ reflection.
     def belongs_to?
-      false
+      macro == :belongs_to
     end
 
+    alias :source_macro :macro
   end
 end

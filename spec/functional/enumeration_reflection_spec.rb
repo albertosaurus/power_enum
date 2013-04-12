@@ -17,7 +17,7 @@ describe PowerEnum::Reflection::EnumerationReflection do
         reflection.conditions.should == [[]]
         reflection.type.should be_nil
         reflection.source_macro.should == :belongs_to
-        reflection.belongs_to?.should be_false
+        reflection.belongs_to?.should be_true
       end
     end
 
