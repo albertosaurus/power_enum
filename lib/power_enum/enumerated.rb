@@ -281,8 +281,8 @@ module PowerEnum::Enumerated
 
     def load_all
       conditions = self.acts_enumerated_conditions
-      order = self.acts_enumerated_order
-      where(conditions).order(order)
+      order      = self.acts_enumerated_order
+      unscoped.where(conditions).order(order)
     end
     private :load_all
 

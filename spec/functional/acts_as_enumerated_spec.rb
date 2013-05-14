@@ -102,7 +102,7 @@ describe 'acts_as_enumerated' do
           status.__enum_name__.should == 'confirmed'
           status.name_sym.should == :confirmed
         end
-        
+
       end
 
       context ':name_column is specified' do
@@ -192,7 +192,7 @@ describe 'acts_as_enumerated' do
         end
       end
     end
-    
+
     it 'returns instance when instance is passed' do
       state = State[1]
       state2 = State[state]
@@ -605,5 +605,31 @@ describe 'acts_as_enumerated' do
     it 'models which are not enums should not act as enumerated' do
       Booking.acts_as_enumerated?.should == false
     end
+  end
+
+  context 'using class method as scopes' do
+    before { State.enumeration_model_updates_permitted = true  }
+    after  { State.enumeration_model_updates_permitted = false }
+
+    it 'with .active method' do
+      State.count.should == 3
+      State.purge_enumerations_cache
+
+      # .acitve may call redefined .all which caches only values with passed scope(not all)
+      State.where(:state_code => "IL").active
+
+      State.all.size.should == 3
+    end
+
+    it 'with .inactive method' do
+      State.count.should == 3
+      State.purge_enumerations_cache
+
+      # .inacitve may call redefined .all which caches only values with passed scope(not all)
+      State.where(:state_code => "IL").inactive
+
+      State.all.size.should == 3
+    end
+
   end
 end
