@@ -79,6 +79,10 @@ module PowerEnum::Reflection
       nil
     end
 
+    def polymorphic?
+      false
+    end
+
     # In this case, returns [[]]
     def conditions
       [[]]
