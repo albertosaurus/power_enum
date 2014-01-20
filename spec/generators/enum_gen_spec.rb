@@ -8,7 +8,7 @@ describe :enum do
 
   context 'no arguments or options' do
     it 'should generate an error message' do
-      subject.should output("No value provided for required arguments 'enum_name'")
+      subject.should output("No value provided for required arguments 'name'")
     end
   end
 
