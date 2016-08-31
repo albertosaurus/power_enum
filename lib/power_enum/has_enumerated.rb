@@ -127,7 +127,7 @@ module PowerEnum::HasEnumerated
 
       # ActiveRecord >= 4.1 handles this differently.
       if self.respond_to? :_reflections=
-        if Rails.version =~ /^4\.2.*/
+        if Rails.version =~ /^4\.2.*/ || Rails.version =~ /5.*/
           self._reflections = self._reflections.merge(part_id.to_s => reflection)
         else
           self._reflections = self._reflections.merge(part_id => reflection)

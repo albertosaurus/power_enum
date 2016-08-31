@@ -27,7 +27,7 @@ module PowerEnum::Reflection
     # the reflection, otherwise returns nil.
     # @return [PowerEnum::Reflection::EnumerationReflection]
     def reflect_on_enumerated( enumerated )
-      key = if Rails.version =~ /^4\.2.*/
+      key = if Rails.version =~ /^4\.2.*/ || Rails.version =~ /5.*/
               enumerated.to_s
             else
               enumerated.to_sym
@@ -53,14 +53,14 @@ module PowerEnum::Reflection
 
     # See ActiveRecord::Reflection::MacroReflection
     def initialize( name, options, active_record )
-      if Rails.version =~ /^4\.2.*/
+      if Rails.version =~ /^4\.2.*/ || Rails.version =~ /5.*/
         super name, nil, options, active_record
       else
         super :has_enumerated, name, nil, options, active_record
       end
     end
 
-    if Rails.version =~ /^4\.2.*/
+    if Rails.version =~ /^4\.2.*/ || Rails.version =~ /5.*/
       def macro
         :has_enumerated
       end

@@ -9,7 +9,7 @@ describe PowerEnum::Reflection::EnumerationReflection do
 
     [:state, :status].each do |enum_attr|
       it "should have a reflection for #{enum_attr}" do
-        refl = if Rails.version =~ /^4\.2.*/
+        refl = if Rails.version =~ /^4\.2.*/ || Rails.version =~ /5.*/
                  enum_attr.to_s
                else
                  enum_attr
@@ -60,7 +60,7 @@ describe PowerEnum::Reflection::EnumerationReflection do
     end
 
     it 'should have the correct table name' do
-      if Rails.version =~ /^4\.2.*/
+      if Rails.version =~ /^4\.2.*/ || Rails.version =~ /5.*/
         Booking.reflections['state'].table_name.should == 'states'
         Booking.reflections['status'].table_name.should == 'booking_statuses'
       else
